@@ -1,0 +1,10 @@
+*.log
+node_modules/
+out
+dist
+
+.idea
+.vscode
+
+*.js
+*.js.map
