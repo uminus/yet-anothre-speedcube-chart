@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "clean": "rimraf /dist",
-    "dev": "esbuild app.tsx --watch --bundle --sourcemap --outfile=public/index.js --define:process.env.NODE_ENV=\\\"development\\\"",
-    "build": "npm run clean | esbuild app.tsx --bundle --minify --sourcemap --outfile=public/index.js --define:process.env.NODE_ENV=\\\"production\\\"",
+    "dev": "esbuild app.tsx --watch --bundle --sourcemap --outfile=docs/index.js --define:process.env.NODE_ENV=\\\"development\\\"",
+    "build": "npm run clean | esbuild app.tsx --bundle --minify --sourcemap --outfile=docs/index.js --define:process.env.NODE_ENV=\\\"production\\\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
