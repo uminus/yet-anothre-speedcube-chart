@@ -1,7 +1,7 @@
 {
-  "name": "chart",
+  "name": "yet-anothre-speedcube-chart",
   "version": "0.0.0",
-  "description": "This app shows a graph based on the CSV  exported from AA.",
+  "description": "This app shows a graph based on the .csv  exported from csTimer.",
   "main": "index.js",
   "scripts": {
     "clean": "rimraf /dist",
