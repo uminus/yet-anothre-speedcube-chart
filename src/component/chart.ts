@@ -1,8 +1,18 @@
 import {Session} from "../model/session";
 import {COLORS} from "../colors";
-import {CategoryScale, Chart, ChartOptions, LinearScale, LineController, LineElement, PointElement} from "chart.js";
+import {
+  CategoryScale,
+  Chart,
+  ChartOptions,
+  Legend,
+  LinearScale,
+  LineController,
+  LineElement,
+  PointElement,
+  Tooltip
+} from "chart.js";
 
-Chart.register(CategoryScale, LinearScale, LineController, LineElement, PointElement);
+Chart.register(CategoryScale, Legend, LinearScale, LineController, LineElement, PointElement, Tooltip);
 
 // https://www.chartjs.org/docs/master/general/performance/
 
