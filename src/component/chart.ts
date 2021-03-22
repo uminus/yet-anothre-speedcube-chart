@@ -1,8 +1,10 @@
-import {Session} from "../model/Session";
+import {Session} from "../model/session";
 import {COLORS} from "../colors";
-import Chart from "chart.js";
+import {CategoryScale, Chart, ChartOptions, LinearScale, LineController, LineElement, PointElement} from "chart.js";
 
-const chartOptions = {
+Chart.register(CategoryScale, LinearScale, LineController, LineElement, PointElement);
+
+const chartOptions: ChartOptions<any> = {
   type: 'line',
   data: {
     labels: [] as Array<string>,
