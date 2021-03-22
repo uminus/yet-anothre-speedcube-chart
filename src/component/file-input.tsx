@@ -25,16 +25,18 @@ export class FileInput extends Component {
       const session: Session = {
         headers: split[0],
         phases: split[0].length - 5,
-        solves: split.map(l => {
-          return {
-            no: l[0],
-            time: toSeconds(l[1]),
-            // comment: l[2],
-            // scramble: l[3],
-            date: l[4],
-            phases: l.slice(5).map(t => toSeconds(t)),
-          }
-        })
+        solves: split
+          .filter(l => l.length > 4)
+          .map(l => {
+            return {
+              no: l[0],
+              time: toSeconds(l[1]),
+              // comment: l[2],
+              // scramble: l[3],
+              date: l[4],
+              phases: l.slice(5).map(t => toSeconds(t)),
+            }
+          })
           .slice(1)
       };
       console.log(session);
