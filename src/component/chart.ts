@@ -4,6 +4,8 @@ import {CategoryScale, Chart, ChartOptions, LinearScale, LineController, LineEle
 
 Chart.register(CategoryScale, LinearScale, LineController, LineElement, PointElement);
 
+// https://www.chartjs.org/docs/master/general/performance/
+
 const chartOptions: ChartOptions<any> = {
   type: 'line',
   data: {
@@ -43,6 +45,7 @@ const chartOptions: ChartOptions<any> = {
         }
       }]
     },
+    animation: false,
   }
 };
 
