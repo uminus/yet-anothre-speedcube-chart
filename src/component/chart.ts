@@ -27,7 +27,8 @@ const chartOptions: ChartOptions<any> = {
         borderColor: COLORS[0],
         fill: false,
         data: [] as Array<number>,
-      }]
+      }
+    ]
   },
   options: {
     title: {
@@ -59,7 +60,18 @@ const chartOptions: ChartOptions<any> = {
   }
 };
 
+let chart: Chart;
+
+export function reset(): void {
+  // FIXME This state may break
+  chartOptions.data.labels = [];
+  chartOptions.data.datasets.splice(1);
+  chartOptions.data.datasets[0].data = [];
+}
+
 export function showChart(ses: Session): void {
+  reset();
+
   for (let i = 0; i < ses.phases; i++) {
     chartOptions.data.datasets.push({
       label: ses.headers[5 + i],
@@ -78,7 +90,10 @@ export function showChart(ses: Session): void {
     }
   });
 
-  const canvas = document.getElementById("chart")! as HTMLCanvasElement;
-  const ctx = canvas.getContext("2d")!;
-  const chart = new Chart(ctx, chartOptions);
+  if (!chart) {
+    const canvas = document.getElementById("chart")! as HTMLCanvasElement;
+    const ctx = canvas.getContext("2d")!;
+    chart = new Chart(ctx, chartOptions);
+  }
+  chart.update();
 }
