@@ -5,4 +5,5 @@ export interface Solve {
   // scramble: string;
   date: string;
   phases: Array<string>;
+  ao: Record<number, number>;
 }

@@ -1,5 +1,5 @@
 import {Component, Fragment, h, JSX} from "preact";
-import {Session} from "../model/session";
+import {calcAverageOfN, Session} from "../model/session";
 import {showChart} from "./chart";
 import {toSeconds} from "../utils";
 
@@ -35,10 +35,14 @@ export class FileInput extends Component {
               // scramble: l[3],
               date: l[4],
               phases: l.slice(5).map(t => toSeconds(t)),
+              ao: []
             }
           })
-          .slice(1)
+          .slice(1),
+        ao: []
       };
+      calcAverageOfN(session, 5);
+      calcAverageOfN(session, 12);
       console.log(session);
       showChart(session);
     };

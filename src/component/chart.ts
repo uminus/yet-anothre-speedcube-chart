@@ -23,10 +23,11 @@ const chartOptions: ChartOptions<any> = {
     datasets: [
       {
         label: 'time',
-        backgroundColor: COLORS[0],
-        borderColor: COLORS[0],
+        borderColor: COLORS[0].replace(")", ",0.5)"),
+        backgroundColor: COLORS[0].replace(")", ",0.5)"),
         fill: false,
         data: [] as Array<number>,
+        radius: 0,
       }
     ]
   },
@@ -75,8 +76,19 @@ export function showChart(ses: Session): void {
   for (let i = 0; i < ses.phases; i++) {
     chartOptions.data.datasets.push({
       label: ses.headers[5 + i],
-      backgroundColor: COLORS[1 + i],
-      borderColor: COLORS[1 + i],
+      borderColor: COLORS[1 + i].replace(")", ",0.5)"),
+      backgroundColor: COLORS[1 + i].replace(")", ",0.5)"),
+      fill: false,
+      data: [],
+      radius: 0,
+    });
+  }
+
+  for (let i = 0; i < ses.ao.length; i++) {
+    chartOptions.data.datasets.push({
+      label: `Ao${ses.ao[i]}`,
+      borderColor: COLORS[1 + i + ses.phases],
+      backgroundColor: COLORS[1 + i + ses.phases],
       fill: false,
       data: []
     });
@@ -87,6 +99,9 @@ export function showChart(ses: Session): void {
     chartOptions.data.datasets[0].data.push(parseFloat(s.time));
     for (let i = 0; i < ses.phases; i++) {
       chartOptions.data.datasets[i + 1].data.push(parseFloat(s.phases[i]));
+    }
+    for (let i = 0; i < ses.ao.length; i++) {
+      chartOptions.data.datasets[i + 1 + ses.phases].data.push(s.ao[ses.ao[i]]);
     }
   });
 
