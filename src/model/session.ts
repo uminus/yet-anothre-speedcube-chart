@@ -45,3 +45,40 @@ export function calcPercentile(ses: Session, n: number): Session {
   ses.percentile.push(n);
   return ses;
 }
+
+export function calcStatistics(ses: Session): Array<Statistics> {
+  const stats: Array<Statistics> = [];
+  const stat = _statistics("session", ses.solves.map(s => parseFloat(s.time)));
+  stats.push(stat);
+  console.log(`${stat.name}: ${stat.avg.toFixed(3)}(+/-${stat.deviation.toFixed(3)}} min/max: ${stat.min}/${stat.max}`);
+  for (let i = 0; i < ses.phases; i++) {
+    const array = ses.solves.map(s => parseFloat(s.phases[i]));
+    const stat = _statistics(`phase${i + 1}`, array);
+    console.log(`${stat.name}: ${stat.avg.toFixed(3)}(+/-${stat.deviation.toFixed(3)}} min/max: ${stat.min}/${stat.max}`);
+    stats.push(stat);
+  }
+
+  return stats;
+}
+
+function _statistics(name: string, array: Array<number>): Statistics {
+  const avg = average(array);
+  const deviation = Math.sqrt(array.reduce((acc, t) => acc + Math.pow(avg - t, 2), 0) / array.length);
+  const min = Math.min(...array);
+  const max = Math.max(...array);
+  return {
+    name,
+    avg,
+    deviation,
+    min,
+    max
+  }
+}
+
+export interface Statistics {
+  name: string;
+  min: number;
+  max: number;
+  avg: number;
+  deviation: number;
+}

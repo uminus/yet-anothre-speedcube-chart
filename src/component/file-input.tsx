@@ -1,7 +1,8 @@
-import {Component, Fragment, h, JSX} from "preact";
-import {calcAverageOfN, calcPercentile, Session} from "../model/session";
+import {Component, Fragment, h, JSX, render} from "preact";
+import {calcAverageOfN, calcPercentile, calcStatistics, Session} from "../model/session";
 import {showChart} from "./chart";
 import {toSeconds} from "../utils";
+import {SessionStatistics} from "./statistics";
 
 export class FileInput extends Component {
   onInput(ev: JSX.TargetedEvent<HTMLInputElement, Event>) {
@@ -48,6 +49,10 @@ export class FileInput extends Component {
 
       calcPercentile(session, 50);
       calcPercentile(session, 10);
+
+      const stats = calcStatistics(session);
+
+      render(<SessionStatistics stats={stats} />, document.getElementById("statistics")!);
 
       console.log(session);
       showChart(session);
