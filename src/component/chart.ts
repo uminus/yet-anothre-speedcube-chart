@@ -28,6 +28,7 @@ const chartOptions: ChartOptions<any> = {
         fill: false,
         data: [] as Array<number>,
         radius: 0,
+        order: 99,
       }
     ]
   },
@@ -56,6 +57,11 @@ const chartOptions: ChartOptions<any> = {
           labelString: 'value'
         }
       }]
+    },
+    plugins: {
+      colorschemes: {
+        scheme: 'tableau.Tableau20'
+      }
     },
     animation: false,
   }
@@ -94,6 +100,17 @@ export function showChart(ses: Session): void {
     });
   }
 
+  for (let i = 0; i < ses.percentile.length; i++) {
+    chartOptions.data.datasets.push({
+      label: `${ses.percentile[i]}%`,
+      borderColor: COLORS[1 + i + ses.phases + ses.ao.length],
+      backgroundColor: COLORS[1 + i + ses.phases + ses.ao.length],
+      fill: false,
+      data: [],
+      radius: 0,
+    });
+  }
+
   ses.solves.forEach(s => {
     chartOptions.data.labels.push(s.no);
     chartOptions.data.datasets[0].data.push(parseFloat(s.time));
@@ -102,6 +119,9 @@ export function showChart(ses: Session): void {
     }
     for (let i = 0; i < ses.ao.length; i++) {
       chartOptions.data.datasets[i + 1 + ses.phases].data.push(s.ao[ses.ao[i]]);
+    }
+    for (let i = 0; i < ses.percentile.length; i++) {
+      chartOptions.data.datasets[i + 1 + ses.phases + ses.ao.length].data.push(s.percentile[ses.percentile[i]]);
     }
   });
 

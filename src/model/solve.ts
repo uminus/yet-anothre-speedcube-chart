@@ -6,4 +6,5 @@ export interface Solve {
   date: string;
   phases: Array<string>;
   ao: Record<number, number>;
+  percentile: Record<number, string>;
 }

@@ -5,6 +5,7 @@ export interface Session {
   solves: Array<Solve>;
   phases: number;
   ao: Array<number>;
+  percentile: Array<number>;
 }
 
 export function calcAverageOfN(ses: Session, n: number): Session {
@@ -29,4 +30,18 @@ export function calcAverageOfN(ses: Session, n: number): Session {
 
 function average(arr: Array<number>): number {
   return arr.reduce((acc, v) => acc + v, 0) / arr.length;
+}
+
+export function calcPercentile(ses: Session, n: number): Session {
+  const num = Math.abs(n);
+  const percent = n * 0.01;
+  const array: Array<string> = [];
+
+  for (const s of ses.solves) {
+    array.push(s.time);
+    array.sort();
+    s.percentile[n] = array[Math.ceil(array.length * percent) - 1];
+  }
+  ses.percentile.push(n);
+  return ses;
 }
