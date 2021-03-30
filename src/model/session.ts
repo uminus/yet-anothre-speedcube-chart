@@ -1,6 +1,7 @@
 import {Solve} from "./solve";
 
 export interface Session {
+  name: string;
   headers: Array<string>;
   solves: Array<Solve>;
   phases: number;
@@ -33,7 +34,6 @@ function average(arr: Array<number>): number {
 }
 
 export function calcPercentile(ses: Session, n: number): Session {
-  const num = Math.abs(n);
   const percent = n * 0.01;
   const array: Array<string> = [];
 

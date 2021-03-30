@@ -1,11 +1,12 @@
 import {Component, Fragment, h, JSX, render} from "preact";
-import {calcAverageOfN, calcPercentile, calcStatistics, Session} from "../model/session";
+import {calcAverageOfN, calcPercentile, calcStatistics} from "../model/session";
 import {showChart} from "./chart";
-import {toSeconds} from "../utils";
 import {SessionStatistics} from "./statistics";
+import {fromCsTimer} from "../converter/cstimer-converter";
+import {SessionSelector} from "./session-selector";
 
 export class FileInput extends Component {
-  onInput(ev: JSX.TargetedEvent<HTMLInputElement, Event>) {
+  async onInput(ev: JSX.TargetedEvent<HTMLInputElement, Event>) {
     console.log(ev);
     console.log(ev.currentTarget.files);
     let files = ev.currentTarget.files;
@@ -13,57 +14,24 @@ export class FileInput extends Component {
       console.log('No file selected');
       return;
     }
-    const reader = new FileReader();
-    reader.onload = () => {
-      const ln = /\r?\n/
-      const csv = /\s*(?:;|$)\s*/
-      const raw = reader.result as string;
-      const split = raw.split(ln).map(l => l.split(csv))
-      if (split[0].length < 5) {
-        alert("This file is not exported csv from csTimer.");
-        return;
-      }
-      const session: Session = {
-        headers: split[0],
-        phases: split[0].length - 5,
-        solves: split
-          .filter(l => l.length > 4)
-          .map(l => {
-            return {
-              no: l[0],
-              time: toSeconds(l[1]),
-              // comment: l[2],
-              // scramble: l[3],
-              date: l[4],
-              phases: l.slice(5).map(t => toSeconds(t)),
-              ao: [],
-              percentile: []
-            }
-          })
-          .slice(1),
-        ao: [],
-        percentile: []
-      };
-      calcAverageOfN(session, 5);
-      calcAverageOfN(session, 12);
+    const sessions = await fromCsTimer(files![0]);
+    sessions.forEach(s => {
+      calcAverageOfN(s, 5);
+      calcAverageOfN(s, 12);
+      calcPercentile(s, 50);
+      calcPercentile(s, 10);
+    })
 
-      calcPercentile(session, 50);
-      calcPercentile(session, 10);
-
-      const stats = calcStatistics(session);
-
-      render(<SessionStatistics stats={stats} />, document.getElementById("statistics")!);
-
-      console.log(session);
-      showChart(session);
-    };
-    reader.readAsText(files![0]);
+    const stats = calcStatistics(sessions[0]);
+    render(<SessionSelector sessions={sessions} />, document.getElementById("sessions")!);
+    render(<SessionStatistics stats={stats} />, document.getElementById("statistics")!);
+    showChart(sessions[0]);
   }
 
   render() {
     return (<Fragment>
       <label for="file">File: </label>
-      <input id="file" type="file" accept="text/csv" onInput={this.onInput} />
+      <input id="file" type="file" accept="text/csv,text/plain" onInput={this.onInput} />
       {/*<label for="file">Choose a file or drag it here.</label>*/}
     </Fragment>);
   }
