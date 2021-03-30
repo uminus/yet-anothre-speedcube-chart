@@ -62,10 +62,11 @@ export function calcStatistics(ses: Session): Array<Statistics> {
 }
 
 function _statistics(name: string, array: Array<number>): Statistics {
-  const avg = average(array);
-  const deviation = Math.sqrt(array.reduce((acc, t) => acc + Math.pow(avg - t, 2), 0) / array.length);
-  const min = Math.min(...array);
-  const max = Math.max(...array);
+  const normalized = array.filter(v => !isNaN(v));
+  const avg = average(normalized);
+  const deviation = Math.sqrt(normalized.reduce((acc, t) => acc + Math.pow(avg - t, 2), 0) / normalized.length);
+  const min = Math.min(...normalized);
+  const max = Math.max(...normalized);
   return {
     name,
     avg,
