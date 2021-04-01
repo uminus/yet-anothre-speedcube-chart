@@ -1,5 +1,6 @@
 import {Session} from "../model/session";
 import {toSeconds} from "../utils";
+import {Solve} from "../model/solve";
 
 
 export async function fromCsTimer(file: File): Promise<Array<Session>> {
@@ -64,7 +65,7 @@ export async function fromCsTimerExportText(file: File): Promise<Array<Session>>
               time: toSeconds(v[0][1]),
               // comment: v[2],
               // scramble: v[1],
-              date: new Date(v[3]).toString(),
+              date: new Date(v[3] * 1000).toISOString(),
               phases: arrayToPhases(v[0]),
               ao: [],
               percentile: []
@@ -90,6 +91,35 @@ function arrayToPhases(array: Array<number>): Array<string> {
     return acc;
   }, [] as Array<number>)
     .map(toSeconds);
+}
+
+export function classifyByDate(ses: Session): Session {
+  const result = ses.solves.reduce((acc, s) => {
+    const timestamp = new Date(s.date);
+    timestamp.setHours(0);
+    timestamp.setMinutes(0);
+    timestamp.setSeconds(0);
+    timestamp.setMilliseconds(0);
+
+    const key = timestamp.toISOString();
+    if (!(key in acc)) {
+      acc[key] = [];
+    }
+    acc[key].push(s);
+    return acc;
+  }, {} as { [key: string]: Array<Solve> })
+  ses.days = Object.keys(result).map(key => {
+    return {
+      date: new Date(key),
+      solves: result[key]
+    }
+  }).sort((a, b) => {
+    if (a.date > b.date) return 1;
+    if (a.date < b.date) return -1;
+    return 0;
+  });
+
+  return ses;
 }
 
 type CsTimerExportType = {

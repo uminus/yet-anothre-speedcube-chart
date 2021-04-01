@@ -10,6 +10,8 @@ This app shows a graph based on the .csv  exported from csTimer.
 
 - [x] show Ao5, Ao12, 50%(median), 10% etc
 
+- [ ] experimental: Daily chart
+
 
 
 ## build

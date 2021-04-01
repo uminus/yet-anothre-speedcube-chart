@@ -5,7 +5,7 @@
   "scripts": {
     "clean": "rimraf /dist",
     "dev": "esbuild src/index.tsx --watch --bundle --sourcemap --outfile=docs/index.js --define:process.env.NODE_ENV=\\\"development\\\"",
-    "build": "npm run clean | esbuild src/index.tsx --bundle --minify --sourcemap --outfile=docs/index.js --define:process.env.NODE_ENV=\\\"production\\\"",
+    "build": "npm run clean | esbuild src/index.tsx --bundle --metafile=metafile.json --minify --sourcemap --outfile=docs/index.js --define:process.env.NODE_ENV=\\\"production\\\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -19,7 +19,8 @@
     "typescript": "^4.2.3"
   },
   "dependencies": {
-    "chart.js": "3.0.0-rc.3",
+    "@sgratzl/chartjs-chart-boxplot": "^3.0.0-rc.1",
+    "chart.js": "3.0.0-rc.6",
     "preact": "^10.5.13"
   }
 }

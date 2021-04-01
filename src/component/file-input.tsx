@@ -1,8 +1,8 @@
 import {Component, Fragment, h, JSX, render} from "preact";
 import {calcAverageOfN, calcPercentile, calcStatistics} from "../model/session";
-import {showChart} from "./chart";
+import {showChart} from "./day-chart";
 import {SessionStatistics} from "./statistics";
-import {fromCsTimer} from "../converter/cstimer-converter";
+import {classifyByDate, fromCsTimer} from "../converter/cstimer-converter";
 import {SessionSelector} from "./session-selector";
 
 export class FileInput extends Component {
@@ -15,7 +15,9 @@ export class FileInput extends Component {
       return;
     }
     const sessions = await fromCsTimer(files![0]);
+
     sessions.forEach(s => {
+      classifyByDate(s);
       calcAverageOfN(s, 5);
       calcAverageOfN(s, 12);
       calcPercentile(s, 50);

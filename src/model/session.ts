@@ -7,6 +7,7 @@ export interface Session {
   phases: number;
   ao: Array<number>;
   percentile: Array<number>;
+  days?: Array<{date: Date, solves: Array<Solve>}>;
 }
 
 export function calcAverageOfN(ses: Session, n: number): Session {

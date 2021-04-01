@@ -1,7 +1,7 @@
 import {Component, h, JSX, render} from "preact";
 import {calcStatistics, Session} from "../model/session";
 import {SessionStatistics} from "./statistics";
-import {showChart} from "./chart";
+import {showChart} from "./day-chart";
 
 export class SessionSelector extends Component<SessionSelectorProps, State> {
   constructor(props: SessionSelectorProps) {

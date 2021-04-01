@@ -8,3 +8,4 @@ dist
 
 *.js
 *.js.map
+metafile.json
