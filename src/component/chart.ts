@@ -1,134 +1,53 @@
 import {Session} from "../model/session";
-import {COLORS} from "../colors";
-import {
-  CategoryScale,
-  Chart,
-  ChartOptions,
-  Legend,
-  LinearScale,
-  LineController,
-  LineElement,
-  PointElement,
-  Tooltip
-} from "chart.js";
 
-Chart.register(CategoryScale, Legend, LinearScale, LineController, LineElement, PointElement, Tooltip);
-
-// https://www.chartjs.org/docs/master/general/performance/
-
-const chartOptions: ChartOptions<any> = {
-  type: 'line',
-  data: {
-    labels: [] as Array<string>,
-    datasets: [
-      {
-        label: 'time',
-        borderColor: COLORS[0].replace(")", ",0.5)"),
-        backgroundColor: COLORS[0].replace(")", ",0.5)"),
-        fill: false,
-        data: [] as Array<number>,
-        radius: 0,
-        order: 99,
-      }
-    ]
-  },
-  options: {
-    title: {
-      text: 'Time chart'
-    },
-    elements: {
-      point: {
-        radius: 2
-      },
-      line: {
-        borderWidth: 2
-      }
-    },
-    scales: {
-      xAxes: [{
-        scaleLabel: {
-          display: true,
-          labelString: 'No.'
-        }
-      }],
-      yAxes: [{
-        scaleLabel: {
-          display: true,
-          labelString: 'value'
-        }
-      }]
-    },
-    plugins: {
-      colorschemes: {
-        scheme: 'tableau.Tableau20'
-      }
-    },
-    animation: false,
-  }
-};
-
-let chart: Chart;
-
-export function reset(): void {
-  // FIXME This state may break
-  chartOptions.data.labels = [];
-  chartOptions.data.datasets.splice(1);
-  chartOptions.data.datasets[0].data = [];
-}
 
 export function showChart(ses: Session): void {
-  reset();
-
-  for (let i = 0; i < ses.phases; i++) {
-    chartOptions.data.datasets.push({
-      label: ses.headers[5 + i],
-      borderColor: COLORS[1 + i].replace(")", ",0.5)"),
-      backgroundColor: COLORS[1 + i].replace(")", ",0.5)"),
-      fill: false,
-      data: [],
-      radius: 0,
-    });
-  }
-
-  for (let i = 0; i < ses.ao.length; i++) {
-    chartOptions.data.datasets.push({
-      label: `Ao${ses.ao[i]}`,
-      borderColor: COLORS[1 + i + ses.phases],
-      backgroundColor: COLORS[1 + i + ses.phases],
-      fill: false,
-      data: []
-    });
-  }
-
-  for (let i = 0; i < ses.percentile.length; i++) {
-    chartOptions.data.datasets.push({
-      label: `${ses.percentile[i]}%`,
-      borderColor: COLORS[1 + i + ses.phases + ses.ao.length],
-      backgroundColor: COLORS[1 + i + ses.phases + ses.ao.length],
-      fill: false,
-      data: [],
-      radius: 0,
-    });
-  }
-
-  ses.solves.forEach(s => {
-    chartOptions.data.labels.push(s.no);
-    chartOptions.data.datasets[0].data.push(parseFloat(s.time));
-    for (let i = 0; i < ses.phases; i++) {
-      chartOptions.data.datasets[i + 1].data.push(parseFloat(s.phases[i]));
-    }
-    for (let i = 0; i < ses.ao.length; i++) {
-      chartOptions.data.datasets[i + 1 + ses.phases].data.push(s.ao[ses.ao[i]]);
-    }
-    for (let i = 0; i < ses.percentile.length; i++) {
-      chartOptions.data.datasets[i + 1 + ses.phases + ses.ao.length].data.push(s.percentile[ses.percentile[i]]);
-    }
+  const data = new google.visualization.DataTable();
+  // column
+  data.addColumn("string", "No.");
+  data.addColumn("number", "Time");
+  array(ses.phases).forEach((_, i) => data.addColumn("number", `P.${i + 1}`));
+  array(ses.ao.length).forEach((_, i) => {
+    data.addColumn("number", `Ao${ses.ao[i]}`)
+  });
+  array(ses.percentile.length).map((_, i) => {
+    data.addColumn("number", `${ses.percentile[i]}%`)
   });
 
-  if (!chart) {
-    const canvas = document.getElementById("chart")! as HTMLCanvasElement;
-    const ctx = canvas.getContext("2d")!;
-    chart = new Chart(ctx, chartOptions);
-  }
-  chart.update();
+  // rows
+  data.addRows(ses.solves.map(s => {
+    return [
+      s.no,
+      parseFloat(s.time),
+      ...array(ses.phases).map((_, i) => parseFloat(s.phases[i])),
+      ...ses.ao.map((k: any, i) => s.ao[k]),
+      ...ses.percentile.map((k: any, i) => parseFloat(s.percentile[k]))
+    ];
+  }));
+
+  const view = new google.visualization.DataView(data);
+
+  const options = {
+    title: 'Solves',
+    vAxis: {title: 'Time'},
+    hAxis: {title: 'No.'},
+    seriesType: 'lines',
+    interpolateNulls: true,
+    chartArea: {'height': '80%'},
+  };
+
+  const chart = new google.visualization.ComboChart(document.getElementById('chart')!);
+  google.visualization.events.addListener(chart, 'select', () => {
+    const selection = chart.getSelection();
+    if (!selection[0].row) {
+      console.log(selection[0]);
+      view.hideColumns([(view as any).columns[selection[0].column!]]);
+      chart.draw(view, options);
+    }
+  });
+  chart.draw(view, options);
+}
+
+function array<T>(length: number): Array<T> {
+  return [...Array(length)];
 }
